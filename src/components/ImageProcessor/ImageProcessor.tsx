@@ -7,29 +7,26 @@ export const ImageProcessor = () => {
   const imgElement = useRef<HTMLImageElement>(null);
   const inputElement = useRef<HTMLInputElement>(null);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
-  const [dominantColors, setDominantColors] = useState<[number, number, number][]>(
-    []
-  );
+  const [dominantColors, setDominantColors] = useState<
+    [number, number, number][]
+  >([]);
   const [cvReady, setCvReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   useEffect(() => {
     if (cv.Mat) {
-      console.log("✅ OpenCV ya está listo");
+      console.log("✅ OpenCV is ready");
       setCvReady(true);
     } else {
-      console.log("⏳ Esperando a que OpenCV se cargue...");
+      console.log("⏳ Waiting for OpenCV to load...");
       cv.onRuntimeInitialized = () => {
-        console.log("🚀 OpenCV.js cargado correctamente.");
+        console.log("🚀 OpenCV.js loaded correctly.");
         setCvReady(true);
         forceUpdate();
       };
     }
   }, []);
-
-  useEffect(() => {
-    console.log(isLoading);
-  }, [isLoading]);
 
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files;
@@ -39,16 +36,20 @@ export const ImageProcessor = () => {
     }
   };
 
-  const handleOnLoad = async (
-    event: React.SyntheticEvent<HTMLImageElement>
-  ) => {
+  const handleOnProcess = async () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      processImage();
+    }, 10);
+  };
+
+  const processImage = async () => {
     if (imgElement.current) {
-      setIsLoading(true);
       try {
         const colors = await getDominantColors(imgElement.current, 5);
         setDominantColors(colors);
       } catch (error) {
-        console.error("Error al procesar la imagen:", error);
+        console.error("Error processing image:", error);
       } finally {
         setIsLoading(false);
       }
@@ -57,13 +58,19 @@ export const ImageProcessor = () => {
     }
   };
 
+  const handleOnLoad = () => {
+    setIsImageLoaded(true);
+	setDominantColors([]);
+    setIsLoading(false);
+  };
+
   async function getDominantColors(
     imageElement: HTMLImageElement,
     k: number = 3
   ) {
     return new Promise<[number, number, number][]>((resolve, reject) => {
       try {
-        console.log("⏳ Procesando imagen...⏳");
+        console.log("⏳ Processing image...⏳");
         let src = cv.imread(imageElement);
 
         if (src.type() === cv.CV_8UC4) {
@@ -128,20 +135,23 @@ export const ImageProcessor = () => {
     <>
       {cvReady ? (
         <div>
-          {isLoading && <h2>⏳ Cargando Imagen... ⏳</h2>}
-          {!isLoading ? (
-            <div className="input-output-container">
-              <div className="input-output-container-image">
-                {imageSrc.current && (
-                  <img
-                    className="input-output-container-image-item"
-                    ref={imgElement}
-                    onLoad={handleOnLoad}
-                    alt="No Image"
-                    src={imageSrc.current}
-                  />
-                )}
+          <div className="input-output-container">
+            <div className="input-output-container-image">
+              {imageSrc.current && (
+                <img
+                  className="input-output-container-image-item"
+                  ref={imgElement}
+                  onLoad={handleOnLoad}
+                  alt="No Image"
+                  src={imageSrc.current}
+                />
+              )}
+            </div>
+            {isLoading ? (
+              <div className="spinner-container">
+                <div className="spinner"></div>
               </div>
+            ) : (
               <div
                 className="input-output-container-colors"
                 style={{ height: imgElement.current?.clientHeight || "auto" }}
@@ -156,10 +166,9 @@ export const ImageProcessor = () => {
                   ></div>
                 ))}
               </div>
-            </div>
-          ) : (
-            <h2>⏳ Cargando Imagen... ⏳</h2>
-          )}
+            )}
+          </div>
+
           <div className="caption">
             <input
               type="file"
@@ -170,12 +179,17 @@ export const ImageProcessor = () => {
               style={{ display: "none" }}
             />
             <label htmlFor="file-upload" className="custom-file-upload">
-              📁 Subir Imagen
+              📁 Upload Image
             </label>
+            {isImageLoaded && (
+              <label onClick={handleOnProcess} className="custom-file-upload">
+                💻 Process Image
+              </label>
+            )}
           </div>
         </div>
       ) : (
-        <h2>⏳ Cargando OpenCV... ⏳</h2>
+        <h2>⏳ Loading OpenCV... ⏳</h2>
       )}
     </>
   );
