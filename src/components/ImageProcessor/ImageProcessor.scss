@@ -1,0 +1,63 @@
+.input-output-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-output-container-image {
+  display: flex;
+  justify-content: center;
+}
+
+.input-output-container-image-item {
+  max-width: 100%;
+  height: auto;
+}
+
+.input-output-container-colors {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.input-output-container-colors-box {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+}
+
+.caption {
+  margin-top: 20px;
+}
+
+.custom-file-upload {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid rgba(255, 255, 255, 0.3);
+  border-top: 6px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
