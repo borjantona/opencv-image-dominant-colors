@@ -8,10 +8,10 @@ describe("ImageProcessor", () => {
 
     await waitFor(() => {
       expect(
-        screen.queryByText("⏳ Cargando OpenCV... ⏳")
+        screen.queryByText("⏳ Loading OpenCV... ⏳")
       ).not.toBeInTheDocument();
     });
 
-    expect(screen.getByText("📁 Subir Imagen")).toBeInTheDocument();
+    expect(screen.getByText("📁 Upload Image")).toBeInTheDocument();
   });
 });
