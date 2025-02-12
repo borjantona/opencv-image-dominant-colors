@@ -40,7 +40,7 @@ export const ImageProcessor = () => {
     setIsLoading(true);
     setTimeout(() => {
       processImage();
-    }, 10);
+    }, 100);
   };
 
   const processImage = async () => {
