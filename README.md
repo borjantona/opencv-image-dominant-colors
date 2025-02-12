@@ -3,6 +3,7 @@
 To run this just clone it and 
 
 ```
+npm install
 npm run dev
 ```
 
