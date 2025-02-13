@@ -28,32 +28,35 @@ export const DominantColors = ({
           <div className="spinner"></div>
         </div>
       ) : (
-        <div
-          className="input-output-container-colors"
-          style={{ height: imgElement?.clientHeight || "auto" }}
-        >
-          {dominantColors.map((color, index) => (
-            <div
-              key={index}
-              className="input-output-container-colors-box"
-              style={{
-                backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-              }}
-              onMouseEnter={() => setHoveredColors(color)}
-              onMouseLeave={() => setHoveredColors(null)}
-			  onTouchStart={() => setHoveredColors(color)}
-			  onTouchEnd={() => setHoveredColors(null)}
-            ></div>
-          ))}
-          {dominantColors && hoveredColors ? (
-            <div className="color-tooltip">
-              {rgbToHex(hoveredColors[0], hoveredColors[1], hoveredColors[2])}
-            </div>
-          ) : (dominantColors.length > 0 && (
-            <div className="color-tooltip">
-              Hover 
-            </div>
-          ))}
+        <div>
+          <div
+            className="input-output-container-colors"
+            style={{ height: imgElement?.clientHeight || "auto" }}
+          >
+            {dominantColors.map((color, index) => (
+              <div
+                key={index}
+                className="input-output-container-colors-box"
+                style={{
+                  backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+                }}
+                onMouseEnter={() => setHoveredColors(color)}
+                onMouseLeave={() => setHoveredColors(null)}
+                onTouchStart={() => setHoveredColors(color)}
+                onTouchEnd={() => setHoveredColors(null)}
+              ></div>
+            ))}
+           
+          </div>
+		  {dominantColors && hoveredColors ? (
+              <div className="color-tooltip">
+                {rgbToHex(hoveredColors[0], hoveredColors[1], hoveredColors[2])}
+              </div>
+            ) : (
+              dominantColors.length > 0 && (
+                <div className="color-tooltip">Hover</div>
+              )
+            )}
         </div>
       )}
     </>
