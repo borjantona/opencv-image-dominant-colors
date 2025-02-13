@@ -41,12 +41,12 @@
   justify-content: center;
   gap: 20px;
   &-upload {
+	font-weight: 200;
     display: inline-block;
     padding: 10px 20px;
     background-color: #dd38ec;
     color: white;
     font-size: 16px;
-    font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
     border: none;
@@ -54,5 +54,22 @@
     &:hover {
       background-color: #e91fc7;
     }
+  }
+}
+
+.input-k {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px auto;
+  font-weight: 200;
+  &-input {
+	height: 2rem;
+	width: 50px;
+	border-radius: 5px;
+	border: none;
+	text-align: center;
   }
 }

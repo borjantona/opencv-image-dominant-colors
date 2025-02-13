@@ -8,6 +8,7 @@ export const ImageProcessor = () => {
   const imageSrc = useRef<string>(undefined);
   const imgElement = useRef<HTMLImageElement>(null);
   const inputElement = useRef<HTMLInputElement>(null);
+  const [k, setK] = useState(5);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const [dominantColors, setDominantColors] = useState<
     [number, number, number][]
@@ -39,7 +40,7 @@ export const ImageProcessor = () => {
 
   const handleOnLoad = () => {
     setIsImageLoaded(true);
-	setDominantColors([]);
+    setDominantColors([]);
     setIsLoading(false);
   };
 
@@ -50,10 +51,14 @@ export const ImageProcessor = () => {
     }, 100);
   };
 
+  const handleKChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setK(Number(e.target.value));
+  };
+
   const processImage = async () => {
     if (imgElement.current) {
       try {
-        const colors = await getDominantColors(imgElement.current, 5);
+        const colors = await getDominantColors(imgElement.current, k);
         setDominantColors(colors);
       } catch (error) {
         console.error("Error processing image:", error);
@@ -79,7 +84,11 @@ export const ImageProcessor = () => {
                 />
               )}
             </div>
-            <DominantColors dominantColors={dominantColors} imgElement={imgElement.current} isLoading={isLoading} />
+            <DominantColors
+              dominantColors={dominantColors}
+              imgElement={imgElement.current}
+              isLoading={isLoading}
+            />
           </div>
 
           <div className="custom-file">
@@ -99,6 +108,17 @@ export const ImageProcessor = () => {
               </button>
             )}
           </div>
+          {isImageLoaded && <div className="input-k">
+            <label htmlFor="k-input" className="input-k-label">
+              Number of Colors
+            </label>
+            <input
+              type="number"
+              className="input-k-input"
+              value={k}
+              onChange={handleKChange}
+            />
+          </div>}
         </div>
       ) : (
         <h2>⏳ Loading OpenCV... ⏳</h2>
