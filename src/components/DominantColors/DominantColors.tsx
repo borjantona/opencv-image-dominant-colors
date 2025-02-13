@@ -45,15 +45,15 @@ export const DominantColors = ({
 			  onTouchEnd={() => setHoveredColors(null)}
             ></div>
           ))}
-          {hoveredColors ? (
+          {dominantColors && hoveredColors ? (
             <div className="color-tooltip">
               {rgbToHex(hoveredColors[0], hoveredColors[1], hoveredColors[2])}
             </div>
-          ) : (
+          ) : (dominantColors.length > 0 && (
             <div className="color-tooltip">
               Hover 
             </div>
-          )}
+          ))}
         </div>
       )}
     </>
