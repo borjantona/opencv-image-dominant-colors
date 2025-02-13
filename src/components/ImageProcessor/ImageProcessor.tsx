@@ -1,11 +1,14 @@
 import { ChangeEvent, useEffect, useReducer, useRef, useState } from "react";
 import cv from "@techstark/opencv-js";
 import "./ImageProcessor.scss";
+import { DominantColors } from "../DominantColors/DominantColors";
+import { getDominantColors } from "../../utils/opencv.utils";
 
 export const ImageProcessor = () => {
   const imageSrc = useRef<string>(undefined);
   const imgElement = useRef<HTMLImageElement>(null);
   const inputElement = useRef<HTMLInputElement>(null);
+  const [k, setK] = useState(5);
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
   const [dominantColors, setDominantColors] = useState<
     [number, number, number][]
@@ -23,7 +26,6 @@ export const ImageProcessor = () => {
       cv.onRuntimeInitialized = () => {
         console.log("🚀 OpenCV.js loaded correctly.");
         setCvReady(true);
-        forceUpdate();
       };
     }
   }, []);
@@ -36,6 +38,12 @@ export const ImageProcessor = () => {
     }
   };
 
+  const handleOnLoad = () => {
+    setIsImageLoaded(true);
+    setDominantColors([]);
+    setIsLoading(false);
+  };
+
   const handleOnProcess = async () => {
     setIsLoading(true);
     setTimeout(() => {
@@ -43,93 +51,22 @@ export const ImageProcessor = () => {
     }, 100);
   };
 
+  const handleKChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setK(Number(e.target.value));
+  };
+
   const processImage = async () => {
     if (imgElement.current) {
       try {
-        const colors = await getDominantColors(imgElement.current, 5);
+        const colors = await getDominantColors(imgElement.current, k);
         setDominantColors(colors);
       } catch (error) {
         console.error("Error processing image:", error);
       } finally {
         setIsLoading(false);
       }
-    } else {
-      console.log(event);
     }
   };
-
-  const handleOnLoad = () => {
-    setIsImageLoaded(true);
-	setDominantColors([]);
-    setIsLoading(false);
-  };
-
-  async function getDominantColors(
-    imageElement: HTMLImageElement,
-    k: number = 3
-  ) {
-    return new Promise<[number, number, number][]>((resolve, reject) => {
-      try {
-        console.log("⏳ Processing image...⏳");
-        let src = cv.imread(imageElement);
-
-        if (src.type() === cv.CV_8UC4) {
-          const temp = new cv.Mat();
-          cv.cvtColor(src, temp, cv.COLOR_RGBA2RGB);
-          src.delete();
-          src = temp;
-        }
-
-        const samples = new cv.Mat(src.rows * src.cols, 3, cv.CV_32F);
-        let index = 0;
-
-        for (let i = 0; i < src.rows; i++) {
-          for (let j = 0; j < src.cols; j++) {
-            const pixelIndex = (i * src.cols + j) * 3;
-            samples.data32F[index * 3] = src.data[pixelIndex]; // R
-            samples.data32F[index * 3 + 1] = src.data[pixelIndex + 1]; // G
-            samples.data32F[index * 3 + 2] = src.data[pixelIndex + 2]; // B
-            index++;
-          }
-        }
-
-        const labels = new cv.Mat();
-        const centers = new cv.Mat();
-        cv.kmeans(
-          samples,
-          k,
-          labels,
-          new cv.TermCriteria(
-            cv.TermCriteria_EPS + cv.TermCriteria_MAX_ITER,
-            10,
-            1.0
-          ),
-          5,
-          2,
-          centers
-        );
-
-        const colors: [number, number, number][] = [];
-        for (let i = 0; i < centers.rows; i++) {
-          const color: [number, number, number] = [
-            Math.round(centers.data32F[i * 3]), // R
-            Math.round(centers.data32F[i * 3 + 1]), // G
-            Math.round(centers.data32F[i * 3 + 2]), // B
-          ];
-          colors.push(color);
-        }
-
-        src.delete();
-        samples.delete();
-        labels.delete();
-        centers.delete();
-
-        resolve(colors);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  }
 
   return (
     <>
@@ -147,33 +84,17 @@ export const ImageProcessor = () => {
                 />
               )}
             </div>
-            {isLoading ? (
-              <div className="spinner-container">
-                <div className="spinner"></div>
-              </div>
-            ) : (
-              <div
-                className="input-output-container-colors"
-                style={{ height: imgElement.current?.clientHeight || "auto" }}
-              >
-                {dominantColors.map((color, index) => (
-                  <div
-                    key={index}
-                    className="input-output-container-colors-box"
-                    style={{
-                      backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
-                    }}
-                  ></div>
-                ))}
-              </div>
-            )}
+            <DominantColors
+              dominantColors={dominantColors}
+              imgElement={imgElement.current}
+              isLoading={isLoading}
+            />
           </div>
 
-          <div className="caption">
+          <div className="custom-file">
             <input
               type="file"
               onChange={onFileChange}
-              name="file"
               ref={inputElement}
               id="file-upload"
               style={{ display: "none" }}
@@ -182,11 +103,22 @@ export const ImageProcessor = () => {
               📁 Upload Image
             </label>
             {isImageLoaded && (
-              <label onClick={handleOnProcess} className="custom-file-upload">
+              <button onClick={handleOnProcess} className="custom-file-upload">
                 💻 Process Image
-              </label>
+              </button>
             )}
           </div>
+          {isImageLoaded && <div className="input-k">
+            <label htmlFor="k-input" className="input-k-label">
+              Number of Colors
+            </label>
+            <input
+              type="number"
+              className="input-k-input"
+              value={k}
+              onChange={handleKChange}
+            />
+          </div>}
         </div>
       ) : (
         <h2>⏳ Loading OpenCV... ⏳</h2>
