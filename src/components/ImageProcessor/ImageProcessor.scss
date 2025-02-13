@@ -21,7 +21,7 @@
     height: 100%; // Para que crezca con respecto a la imagen
     &-box {
       flex-grow: 1; // Hace que todos los colores ocupen el mismo espacio vertical
-      width: 50px;
+      width: 66px;
       &:first-child {
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
