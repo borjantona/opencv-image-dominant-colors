@@ -3,7 +3,7 @@ import cv from "@techstark/opencv-js";
 import "./ImageProcessor.scss";
 import { DominantColors } from "../DominantColors/DominantColors";
 import { getDominantColors } from "../../utils/opencv.utils";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 export const ImageProcessor = () => {
   const imageSrc = useRef<string>(undefined);
@@ -34,6 +34,10 @@ export const ImageProcessor = () => {
   const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files;
     if (file?.[0]) {
+      if (!file[0].type.startsWith("image/")) {
+        toast.error("Please upload a valid image file.");
+        return;
+      }
       imageSrc.current = URL.createObjectURL(file[0]);
       forceUpdate();
     }
@@ -57,11 +61,11 @@ export const ImageProcessor = () => {
   };
 
   const processImage = async () => {
-	if (k > 30 || k < 1) {
-		toast.error('K must be less than 30 and greater than 0');
-		setIsLoading(false);
-		return;
-	}
+    if (k > 30 || k < 1) {
+      toast.error("K must be less than 30 and greater than 0");
+      setIsLoading(false);
+      return;
+    }
     if (imgElement.current) {
       try {
         const colors = await getDominantColors(imgElement.current, k);
@@ -100,6 +104,7 @@ export const ImageProcessor = () => {
           <div className="custom-file">
             <input
               type="file"
+              accept="image/*"
               onChange={onFileChange}
               ref={inputElement}
               id="file-upload"
@@ -114,17 +119,19 @@ export const ImageProcessor = () => {
               </button>
             )}
           </div>
-          {isImageLoaded && <div className="input-k">
-            <label htmlFor="k-input" className="input-k-label">
-              Number of Colors
-            </label>
-            <input
-              type="number"
-              className="input-k-input"
-              value={k}
-              onChange={handleKChange}
-            />
-          </div>}
+          {isImageLoaded && (
+            <div className="input-k">
+              <label htmlFor="k-input" className="input-k-label">
+                Number of Colors
+              </label>
+              <input
+                type="number"
+                className="input-k-input"
+                value={k}
+                onChange={handleKChange}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <h2>⏳ Loading OpenCV... ⏳</h2>
