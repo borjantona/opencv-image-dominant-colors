@@ -19,9 +19,9 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: stretch;
-    height: 100%; // Para que crezca con respecto a la imagen
+    height: 100%; 
     &-box {
-      flex-grow: 1; // Hace que todos los colores ocupen el mismo espacio vertical
+      flex-grow: 1; 
       width: 66px;
       &:first-child {
         border-top-left-radius: 10px;
