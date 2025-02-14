@@ -3,6 +3,7 @@ import cv from "@techstark/opencv-js";
 import "./ImageProcessor.scss";
 import { DominantColors } from "../DominantColors/DominantColors";
 import { getDominantColors } from "../../utils/opencv.utils";
+import { toast } from 'sonner';
 
 export const ImageProcessor = () => {
   const imageSrc = useRef<string>(undefined);
@@ -56,6 +57,11 @@ export const ImageProcessor = () => {
   };
 
   const processImage = async () => {
+	if (k > 30 || k < 1) {
+		toast.error('K must be less than 30 and greater than 0');
+		setIsLoading(false);
+		return;
+	}
     if (imgElement.current) {
       try {
         const colors = await getDominantColors(imgElement.current, k);
