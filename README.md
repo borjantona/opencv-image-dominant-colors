@@ -1,3 +1,5 @@
+![CI Status](https://github.com/borjantona/opencv-image-dominant-colors/actions/workflows/CI.yml/badge.svg)
+
 # OpenCV and React tool
 
 To run this just clone it and 
