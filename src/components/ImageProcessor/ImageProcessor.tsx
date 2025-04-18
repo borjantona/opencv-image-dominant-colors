@@ -44,6 +44,10 @@ export const ImageProcessor = () => {
   };
 
   const handleOnLoad = () => {
+    const imgElement = document.querySelector('.input-output-container-image-item');
+    if (imgElement) {
+      imgElement.classList.remove('with-colors');
+    }
     setIsImageLoaded(true);
     setDominantColors([]);
     setIsLoading(false);
@@ -70,11 +74,25 @@ export const ImageProcessor = () => {
       try {
         const colors = await getDominantColors(imgElement.current, k);
         setDominantColors(colors);
+        updateImageShadow(colors);
       } catch (error) {
         console.error("Error processing image:", error);
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+
+  const updateImageShadow = (colors: [number, number, number][]) => {
+    const imgElement = document.querySelector('.input-output-container-image-item');
+    if (imgElement) {
+      imgElement.classList.add('with-colors');
+      colors.forEach((color, index) => {
+        document.documentElement.style.setProperty(
+          `--color${index + 1}`, 
+          `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0.3)`
+        );
+      });
     }
   };
 
